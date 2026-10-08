@@ -1,0 +1,1029 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>#{{ channel.name }} - Student Discord</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <style>
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        background: #0e1621;
+        color: #f5f5f5;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .app { height: 100vh; }
+
+    /* ---------- Scrollbars ---------- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+
+    /* =========================
+       LEFT SIDEBAR
+    ========================= */
+    .sidebar {
+        height: 100vh;
+        background: #17212b;
+        padding: 15px 10px;
+        overflow-y: auto;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .server-name {
+        font-size: 17px;
+        font-weight: 700;
+        padding: 12px 12px 16px;
+        letter-spacing: 0.2px;
+        color: #ffffff;
+    }
+
+    .category {
+        color: #6c7883;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        margin: 18px 12px 8px;
+    }
+
+    .channel-link {
+        display: block;
+        color: #a2acb4;
+        text-decoration: none;
+        padding: 9px 12px;
+        border-radius: 10px;
+        margin-bottom: 3px;
+        font-size: 14.5px;
+        transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
+    }
+
+    .channel-link:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+        transform: translateX(2px);
+    }
+
+    .channel-link.active {
+        background: #2b5278;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(43, 82, 120, 0.35);
+    }
+
+    /* =========================
+       CHAT
+    ========================= */
+    .chat-area {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #0e1621;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgba(43, 82, 120, 0.18), transparent 45%),
+            radial-gradient(circle at 80% 70%, rgba(118, 106, 200, 0.10), transparent 45%);
+    }
+
+    .chat-header {
+        height: 60px;
+        min-height: 60px;
+        background: #17212b;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+        z-index: 2;
+        animation: slideDown 0.35s ease both;
+    }
+
+    .channel-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Telegram-style bubble */
+    .message {
+        padding: 8px 12px;
+        margin: 0;
+        border-radius: 12px 12px 12px 4px;
+        background: #182533;
+        max-width: 70%;
+        align-self: flex-start;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+        animation: messageIn 0.25s ease both;
+        transition: background 0.18s ease, transform 0.15s ease;
+    }
+
+    .message:hover {
+        background: #1e2c3a;
+        transform: translateY(-1px);
+    }
+
+    .username {
+        font-weight: 600;
+        color: #6ab3f3;
+        font-size: 13.5px;
+    }
+
+    .message-time {
+        color: #6c7883;
+        font-size: 10.5px;
+        margin-left: 8px;
+        float: right;
+        margin-top: 4px;
+    }
+
+    .message-content {
+        color: #e8ecef;
+        margin-top: 2px;
+        padding: 0;
+        font-size: 14.5px;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    /* =========================
+       INPUT
+    ========================= */
+    .message-area {
+        padding: 12px 20px 16px;
+        background: #17212b;
+        border-top: 1px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .message-input {
+        height: 44px;
+        background: #242f3d;
+        border: 1px solid transparent;
+        color: #ffffff;
+        border-radius: 22px 0 0 22px;
+        padding: 10px 18px;
+        font-size: 14.5px;
+        transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .message-input:focus {
+        background: #242f3d;
+        color: #ffffff;
+        border-color: #5288c1;
+        box-shadow: 0 0 0 3px rgba(82, 136, 193, 0.18);
+        outline: none;
+    }
+
+    .message-input::placeholder { color: #6c7883; }
+
+    .send-button {
+        height: 44px;
+        border-radius: 0 22px 22px 0;
+        padding: 0 20px;
+        background: #5288c1;
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .send-button:hover {
+        background: #6197d1;
+        box-shadow: 0 4px 14px rgba(82, 136, 193, 0.4);
+        transform: translateY(-1px);
+    }
+
+    .send-button:active { transform: translateY(0) scale(0.97); }
+
+    /* =========================
+       RIGHT MEMBERS
+    ========================= */
+    .members-panel {
+        height: 100vh;
+        background: #17212b;
+        padding: 20px 12px;
+        overflow-y: auto;
+        border-left: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .members-title {
+        color: #6c7883;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        padding: 0 8px;
+    }
+
+    .member {
+        display: flex;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        margin-bottom: 3px;
+        transition: background 0.18s ease, transform 0.15s ease;
+        cursor: pointer;
+    }
+
+    .member:hover {
+        background: rgba(255, 255, 255, 0.06);
+        transform: translateX(2px);
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        min-width: 10px;
+        border-radius: 50%;
+        margin-right: 10px;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .online {
+        background: #4bcc5e;
+        box-shadow: 0 0 6px rgba(75, 204, 94, 0.6);
+        animation: pulse 2.2s ease-in-out infinite;
+    }
+
+    .offline { background: #6c7883; }
+
+    .member-name {
+        color: #e8ecef;
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .member-status {
+        margin-left: auto;
+        font-size: 10.5px;
+        color: #6c7883;
+    }
+
+    /* =========================
+       EMPTY CHAT
+    ========================= */
+    .empty-message {
+        text-align: center;
+        color: #6c7883;
+        margin: auto;
+        animation: fadeUp 0.5s ease both;
+    }
+
+    .empty-message div:first-child {
+        font-size: 16px;
+        font-weight: 600;
+        color: #a2acb4;
+        margin-bottom: 6px;
+    }
+
+    /* =========================
+       ANIMATIONS
+    ========================= */
+    @keyframes messageIn {
+        from { opacity: 0; transform: translateY(8px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 4px rgba(75, 204, 94, 0.5); }
+        50%      { box-shadow: 0 0 10px rgba(75, 204, 94, 0.9); }
+    }
+
+    /* Stagger the first messages slightly */
+    .messages .message:nth-child(1) { animation-delay: 0.02s; }
+    .messages .message:nth-child(2) { animation-delay: 0.06s; }
+    .messages .message:nth-child(3) { animation-delay: 0.10s; }
+    .messages .message:nth-child(4) { animation-delay: 0.14s; }
+
+    /* =========================
+       MOBILE
+    ========================= */
+    @media (max-width: 992px) {
+        .members-panel { display: none; }
+        .chat-area { width: 75%; }
+        .message { max-width: 85%; }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar { display: none; }
+        .chat-area { width: 100%; }
+        .message { max-width: 92%; }
+    }
+</style>
+
+
+</head>
+
+
+<body
+    data-channel-id="{{ channel.id }}"
+    data-server-id="{{ server.id }}">
+
+
+<div class="container-fluid app">
+
+    <div class="row h-100">
+
+
+        <!-- =========================
+             LEFT SIDEBAR
+        ========================= -->
+
+        <div class="col-md-3 col-lg-2 sidebar">
+
+            <div class="server-name">
+
+                🏫 {{ server.name }}
+
+            </div>
+
+            <hr>
+
+
+            <div class="category">
+
+                TEXT CHANNELS
+
+            </div>
+
+
+            {% for ch in server.channels %}
+
+                <a
+                    href="{{ url_for(
+                        'channel_page',
+                        server_id=server.id,
+                        channel_id=ch.id
+                    ) }}"
+                    class="channel-link
+                    {% if ch.id == channel.id %}
+                        active
+                    {% endif %}">
+
+                    💬 {{ ch.name }}
+
+                </a>
+
+            {% else %}
+
+                <div class="text-secondary small px-2">
+
+                    No channels available.
+
+                </div>
+
+            {% endfor %}
+
+
+            <hr>
+
+
+            <a
+                href="{{ url_for(
+                    'server_page',
+                    server_id=server.id
+                ) }}"
+                class="btn btn-outline-light btn-sm w-100">
+
+                ← Server
+
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}"
+                class="btn btn-outline-light btn-sm w-100 mt-2">
+
+                🏠 Dashboard
+
+            </a>
+
+        </div>
+
+
+        <!-- =========================
+             CHAT AREA
+        ========================= -->
+
+        <div class="col-md-7 col-lg-8 chat-area">
+
+
+            <!-- HEADER -->
+
+            <div class="chat-header">
+
+                <span class="channel-name">
+
+                    # {{ channel.name }}
+
+                </span>
+
+            </div>
+
+
+            <!-- MESSAGES -->
+
+            <div
+                class="messages"
+                id="messages">
+
+
+                {% for message in messages %}
+
+                    <div class="message">
+
+                        <div>
+
+                            <span class="username">
+
+                                👤 {{ message.sender.username }}
+
+                            </span>
+
+
+                            <span class="message-time">
+
+                                {{ message.created_at }}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="message-content">
+
+                            {{ message.content }}
+
+                        </div>
+
+                    </div>
+
+
+                {% else %}
+
+                    <div
+                        class="empty-message"
+                        id="emptyMessage">
+
+                        <h4>
+
+                            👋 Welcome to #{{ channel.name }}
+
+                        </h4>
+
+                        <p>
+
+                            Start the conversation!
+
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
+
+            <!-- MESSAGE INPUT -->
+
+            <div class="message-area">
+
+                <form id="messageForm">
+
+                    <div class="input-group">
+
+                        <input
+                            type="text"
+                            id="messageInput"
+                            name="content"
+                            class="form-control message-input"
+                            placeholder="Message #{{ channel.name }}"
+                            maxlength="2000"
+                            autocomplete="off"
+                            required>
+<button
+    type="submit"
+    class="btn btn-primary send-button"
+    title="Send message">
+    ➤
+</button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================
+             MEMBERS
+        ========================= -->
+
+        <div class="col-md-2 col-lg-2 members-panel">
+
+            <div class="members-title">
+
+                MEMBERS
+
+            </div>
+
+
+            <div id="membersList">
+
+                <div class="text-secondary small">
+
+                    Loading members...
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     SOCKET.IO
+========================= -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+<script>
+
+    /* =========================
+       GET SERVER / CHANNEL ID
+    ========================= */
+
+    const channelId = Number(
+        document.body.dataset.channelId
+    );
+
+    const serverId = Number(
+        document.body.dataset.serverId
+    );
+
+
+    /* =========================
+       ELEMENTS
+    ========================= */
+
+    const socket = io();
+
+    const messagesBox =
+        document.getElementById("messages");
+
+    const messageForm =
+        document.getElementById("messageForm");
+
+    const messageInput =
+        document.getElementById("messageInput");
+
+    const membersList =
+        document.getElementById("membersList");
+
+
+    /* =========================
+       SOCKET CONNECT
+    ========================= */
+
+    socket.on("connect", function() {
+
+        console.log("Connected to Socket.IO");
+
+        socket.emit("join_channel", {
+
+            channel_id: channelId
+
+        });
+
+    });
+
+
+    /* =========================
+       SOCKET ERROR
+    ========================= */
+
+    socket.on("connect_error", function(error) {
+
+        console.error(
+            "Socket connection error:",
+            error
+        );
+
+    });
+
+
+    /* =========================
+       RECEIVE MESSAGE
+    ========================= */
+
+    socket.on(
+        "receive_message",
+        function(data) {
+
+
+            const emptyMessage =
+                document.getElementById(
+                    "emptyMessage"
+                );
+
+
+            if (emptyMessage) {
+
+                emptyMessage.remove();
+
+            }
+
+
+            const message =
+                document.createElement("div");
+
+            message.className =
+                "message";
+
+
+            /* USERNAME */
+
+            const header =
+                document.createElement("div");
+
+
+            const username =
+                document.createElement("span");
+
+            username.className =
+                "username";
+
+            username.textContent =
+                "👤 " + data.username;
+
+
+            /* TIME */
+
+            const time =
+                document.createElement("span");
+
+            time.className =
+                "message-time";
+
+            time.textContent =
+                data.created_at;
+
+
+            header.appendChild(username);
+
+            header.appendChild(time);
+
+
+            /* CONTENT */
+
+            const content =
+                document.createElement("div");
+
+            content.className =
+                "message-content";
+
+            content.textContent =
+                data.content;
+
+
+            message.appendChild(header);
+
+            message.appendChild(content);
+
+
+            messagesBox.appendChild(message);
+
+
+            /* SCROLL */
+
+            messagesBox.scrollTop =
+                messagesBox.scrollHeight;
+
+        }
+    );
+
+
+    /* =========================
+       SEND MESSAGE
+    ========================= */
+
+    messageForm.addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            const content =
+                messageInput.value.trim();
+
+
+            if (content === "") {
+
+                return;
+
+            }
+
+
+            socket.emit(
+                "send_message",
+                {
+
+                    channel_id: channelId,
+
+                    content: content
+
+                }
+            );
+
+
+            messageInput.value = "";
+
+            messageInput.focus();
+
+        }
+    );
+
+
+    /* =========================
+       ENTER TO SEND
+    ========================= */
+
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                messageForm.requestSubmit();
+
+            }
+
+        }
+    );
+
+
+    /* =========================
+       LOAD MEMBERS
+    ========================= */
+
+    async function loadMembers() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/server/" +
+                    serverId +
+                    "/members"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Member API returned " +
+                    response.status
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            membersList.innerHTML = "";
+
+
+            if (
+                !data.members ||
+                data.members.length === 0
+            ) {
+
+                membersList.innerHTML = `
+                    <div class="text-secondary small">
+                        No members found.
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            /* ONLINE FIRST */
+
+            data.members.sort(
+                function(a, b) {
+
+                    if (
+                        a.online &&
+                        !b.online
+                    ) {
+
+                        return -1;
+
+                    }
+
+
+                    if (
+                        !a.online &&
+                        b.online
+                    ) {
+
+                        return 1;
+
+                    }
+
+
+                    return a.username.localeCompare(
+                        b.username
+                    );
+
+                }
+            );
+
+
+            /* CREATE MEMBERS */
+
+            data.members.forEach(
+                function(member) {
+
+
+                    const memberElement =
+                        document.createElement("div");
+
+                    memberElement.className =
+                        "member";
+
+
+                    /* STATUS DOT */
+
+                    const dot =
+                        document.createElement("span");
+
+                    dot.className =
+                        "status-dot " +
+                        (
+                            member.online
+                                ? "online"
+                                : "offline"
+                        );
+
+
+                    /* NAME */
+
+                    const name =
+                        document.createElement("span");
+
+                    name.className =
+                        "member-name";
+
+                    name.textContent =
+                        member.username;
+
+
+                    /* STATUS */
+
+                    const status =
+                        document.createElement("span");
+
+                    status.className =
+                        "member-status";
+
+                    status.textContent =
+                        member.online
+                            ? "Online"
+                            : "Offline";
+
+
+                    memberElement.appendChild(dot);
+
+                    memberElement.appendChild(name);
+
+                    memberElement.appendChild(status);
+
+
+                    membersList.appendChild(
+                        memberElement
+                    );
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Could not load members:",
+                error
+            );
+
+
+            membersList.innerHTML = `
+                <div class="text-danger small">
+                    Could not load members.
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    /* =========================
+       LOAD MEMBERS
+    ========================= */
+
+    loadMembers();
+    const name =
+    document.createElement("a");
+
+    name.className = "member-name";
+
+    name.textContent = member.username;
+
+     name.href =
+    "/profile/" + member.id;
+
+     name.style.textDecoration = "none";
+     name.style.color = "#dbdee1";
+
+
+    /* REFRESH EVERY 5 SECONDS */
+
+    setInterval(
+        loadMembers,
+        5000
+    );
+
+
+    /* =========================
+       INITIAL SCROLL
+    ========================= */
+
+    messagesBox.scrollTop =
+        messagesBox.scrollHeight;
+
+</script>
+
+
+</body>
+
+</html>

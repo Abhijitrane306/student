@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ student.username }} - Profile</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #313338;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card-profile {
+            width: 100%;
+            max-width: 450px;
+            background: #2b2d31;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .banner {
+            height: 120px;
+            background: linear-gradient(
+                135deg,
+                #5865f2,
+                #7289da
+            );
+        }
+
+        .content {
+            padding: 0 25px 25px;
+        }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            margin-top: -42px;
+
+            border-radius: 50%;
+            border: 6px solid #2b2d31;
+
+            background: #5865f2;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 34px;
+            font-weight: bold;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .status {
+            color: #23a559;
+            font-size: 13px;
+        }
+
+        .info {
+            background: #1e1f22;
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 18px;
+        }
+
+        .label {
+            color: #949ba4;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .value {
+            margin-top: 4px;
+            color: #dbdee1;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="card-profile">
+
+        <div class="banner"></div>
+
+        <div class="content">
+
+            <div class="avatar">
+                {{ student.username[0]|upper }}
+            </div>
+
+            <div class="username">
+                {{ student.username }}
+            </div>
+
+            <div class="status">
+                ● Student
+            </div>
+
+            <div class="info">
+
+                <div class="label">
+                    Username
+                </div>
+
+                <div class="value">
+                    {{ student.username }}
+                </div>
+
+            </div>
+
+            <div class="info">
+
+                <div class="label">
+                    Student ID
+                </div>
+
+                <div class="value">
+                    #{{ student.id }}
+                </div>
+
+            </div>
+
+            <div class="d-grid mt-4">
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="btn btn-primary">
+
+                    ← Back to Dashboard
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
